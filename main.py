@@ -23,12 +23,16 @@ def directory_walk(rootDir):
             directory_walk(i.path_display)
         else:
             global dupes, fileList
+
+            # If we hav already seen file, make sure it is a dupe
+            # if it is not actually dupe, append path to fileList item
             if i.name in fileList:
-                if fileList[i.name][1] == i.size:
-                    if fileList[i.name][2] == i.content_hash:
-                        dupes[i.name] = (i.path_display, i.size, i.content_hash)
+                if fileList[i.name][1] == i.size and fileList[i.name][2] == i.content_hash:
+                    dupes[i.name] = (i.path_display, i.size, i.content_hash)
+                else:
+                    fileList[i.name][0].append(i.path_display)
             else:
-                fileList[i.name] = (i.path_display, i.size, i.content_hash)
+                fileList[i.name] = ([i.path_display], i.size, i.content_hash)
 
 def show_dupes():
     '''Show duplicate filename and path'''
@@ -72,4 +76,4 @@ if __name__ == '__main__':
     directory_walk('/Testing')
 
     if len(dupes) > 0:
-        show_dupes()
+        show_dupes(
