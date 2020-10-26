@@ -1,5 +1,4 @@
 import dropbox
-import sys
 import asyncio
 from dropbox.files import WriteMode
 from dropbox.exceptions import ApiError, AuthError, BadInputError
