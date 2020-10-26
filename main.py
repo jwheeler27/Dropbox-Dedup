@@ -28,7 +28,10 @@ def directory_walk(rootDir):
             # if it is not actually dupe, append path to fileList item
             if i.name in fileList:
                 if fileList[i.name][1] == i.size and fileList[i.name][2] == i.content_hash:
-                    dupes[i.name] = (i.path_display, i.size, i.content_hash)
+                    if i.name in dupes:
+                        dupes[i.name][0].append(i.path_display)
+                    else:
+                        dupes[i.name] = ([i.path_display], i.size, i.content_hash)
                 else:
                     fileList[i.name][0].append(i.path_display)
             else:
@@ -43,7 +46,7 @@ def show_dupes():
         print('Path: ', v[0], '\n')
 
 
-def move_dupes(tmpDir):
+async def move_dupes(tmpDir):
     '''
     Move duplicate files to temp dir for user to manually inspect
 
@@ -51,7 +54,7 @@ def move_dupes(tmpDir):
     '''
     pass
 
-async def delete_dupes():
+async def delete_dupes(dupes):
     '''
     delete duplicate files
     '''
@@ -76,4 +79,12 @@ if __name__ == '__main__':
     directory_walk('/Testing')
 
     if len(dupes) > 0:
-        show_dupes(
+        show_dupes()
+
+        delete = input('Would you like to delete duplicate files? (y/n)')
+        loop = asyncio.get_event_loop()
+        if delete == 'y' or 'Y':
+            for k,v in dupes.items():
+                print('Deleting...', k)
+                loop.run_until_complete(delete_dupes(v[0][0:]))
+            delete_dupes(dupes)
