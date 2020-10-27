@@ -38,12 +38,14 @@ def directory_walk(rootDir):
                 fileList[i.name] = ([i.path_display], i.size, i.content_hash)
 
 def show_dupes():
-    '''Show duplicate filename and path'''
+    '''Show duplicate filenames and path'''
     print('Duplicates found')
     print('----------------')
     for k,v in dupes.items():
         print('Filename: ', k)
-        print('Path: ', v[0], '\n')
+        for i in v[0]:
+            print('Path: ', i)
+        print('\n')
 
 
 async def move_dupes(tmpDir):
@@ -54,11 +56,12 @@ async def move_dupes(tmpDir):
     '''
     pass
 
-async def delete_dupes(dupes):
+async def delete_dupes(path):
     '''
     delete duplicate files
     '''
-    pass
+    for i in path:
+        dbx.files_delete(i)
 
 
 if __name__ == '__main__':
@@ -81,10 +84,11 @@ if __name__ == '__main__':
     if len(dupes) > 0:
         show_dupes()
 
+
         delete = input('Would you like to delete duplicate files? (y/n)')
         loop = asyncio.get_event_loop()
         if delete == 'y' or 'Y':
             for k,v in dupes.items():
                 print('Deleting...', k)
                 loop.run_until_complete(delete_dupes(v[0][0:]))
-            delete_dupes(dupes)
+            loop.close()
